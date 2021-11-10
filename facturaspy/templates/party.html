@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <h1>{{.Name}}</h1>
+        <form id="partyForm">
+            <div>
+                <label >
+                    Taxpayer Id:
+                </label>
+                <input id="taxpayerId" value="{{.TaxPayerId}}" disabled="true" />
+            </div>
+
+            <div>
+                <label>
+                    Name:
+                    <input id="name" value="{{.Name}}" disabled="true" />
+                </label>
+            </div>
+            <div>
+                <label>Birth Date</label>
+                <div>
+                    <label>
+                        Day:
+                        <input id="day" value="{{.BirthDate.Day}}" disabled="true" />    
+                    </label>
+                    <label>Month:
+                        <input id="month" value="{{.BirthDate.Month | toMonthInt}}" disabled="true" />
+                    </label>
+                    <label>Year:
+                        <input id="year" value="{{.BirthDate.Year}}" disabled="true" />
+                    </label>
+            </div>
+            <div>
+                <button id="editBtn">Edit</button>
+                <button id="cancelBtn">Cancel</button>
+                <button id="saveBtn">Save</button>
+            </div>
+        </form>
+    </body>
+    <script type="text/javascript" src="/static/js/party.js"></script>
+</html>

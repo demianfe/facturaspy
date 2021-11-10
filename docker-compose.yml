@@ -1,0 +1,42 @@
+version: '3.3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    #container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - 27017:27017
+  pgsql:
+    image: postgres:13.1
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+       - 8432:5432
+    environment:
+      POSTGRES_DB: facturas
+      POSTGRES_USER: facturas
+      POSTGRES_PASSWORD: facturas
+    networks:
+      - facturas
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_LISTEN_PORT: 8433
+      PGADMIN_DEFAULT_EMAIL: demianflorentin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: facturas
+    ports:
+      - 8433:8433
+    networks:
+      - facturas
+
+networks:
+  facturas:
+
+volumes:
+  postgres-data:
