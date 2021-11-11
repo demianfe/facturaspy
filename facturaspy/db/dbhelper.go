@@ -236,12 +236,15 @@ func GetLedger(ledger *Ledger, taxpayerId string, year int) {
 		First(&ledger)
 }
 
-func GetTaxPayer(party *Party) {
+func GetTaxPayer(conn *gorm.DB, party *Party) {
 	// summary data for the taxpayer
-	db := GetPGConnection()
+	// db := GetPGConnection()
 	// close connection
-	sqlDB, _ := db.DB()
+	sqlDB, _ := conn.DB()
 	defer sqlDB.Close()
-	db.Where("tax_payer_id", &party.TaxPayerId).First(&party)
+	conn.Where("tax_payer_id", &party.TaxPayerId).First(&party)
+}
 
+func UpdateParty(conn *gorm.DB, party *Party) {
+	conn.Model(&party).Where("tax_payer_id = ?", party.TaxPayerId).Updates(party)
 }

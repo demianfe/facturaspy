@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -10,6 +12,35 @@ import (
 // Model loosely based in
 // https://www.set.gov.py/portal/PARAGUAY-SET/detail?folder-id=repository:collaboration:/sites/PARAGUAY-SET/categories/SET/biblioteca-virtual/registros-de-libro-compra-venta-ingreso-egreso/registro-en-planilla-electronica-rg-55-2020&content-id=/repository/collaboration/sites/PARAGUAY-SET/documents/biblioteca/biblioteca-virtual/2020/Modelo%20de%20Libro%20ingreso%20y%20egreso%20para%20quienes%20sean%20solo%20contribuyentes%20del%20%20IRP%20(Prestaci%C3%B3n%20de%20servicios%20en%20relaci%C3%B3n%20de%20dependencia).xlsx
 // https://www.set.gov.py/portal/PARAGUAY-SET/detail?folder-id=repository:collaboration:/sites/PARAGUAY-SET/categories/SET/biblioteca-virtual/registros-de-libro-compra-venta-ingreso-egreso/registro-en-planilla-electronica-rg-55-2020&content-id=/repository/collaboration/sites/PARAGUAY-SET/documents/biblioteca/biblioteca-virtual/2020/Modelo%20de%20Libro%20ventas,%20ingresos,%20compras,%20egresos%20para%20contribuyentes%20que%20tengan%20solo%20IVA%20o%20IVA%20y%20Rentas..xlsx
+
+type BaseDate time.Time
+
+func (d BaseDate) Year() int {
+	return time.Time(d).Year()
+}
+
+func (d BaseDate) Day() int {
+	return time.Time(d).Day()
+}
+
+func (d BaseDate) Month() int {
+	return int(time.Time(d).Month())
+}
+
+func (date *BaseDate) UnmarshalJSON(b []byte) error {
+	// extract string and transform it to time
+	const dateFmt = "2006-01-02 15:04"
+
+	dateStr := strings.Trim(string(b), `"`)
+	dateStr = fmt.Sprintf("%s 00:00", dateStr)
+
+	d, err := time.Parse(dateFmt, dateStr)
+	if err != nil {
+		return err
+	}
+	*date = (BaseDate)(d)
+	return nil
+}
 
 type FiscalYear struct {
 	Start time.Time `gorm:"primaryKey"`
@@ -45,7 +76,7 @@ type Party struct {
 	TaxPayerId  string `gorm:"index:idx_taxpayerid,unique" json:"taxpayerId"`
 	DV          int
 	Name        string    `json:"name"`
-	BirthDate   time.Time `json:"birthDate"`
+	BirthDate   BaseDate  `json:"birthDate"`
 	StartDate   time.Time `json:"startDate"`
 	PartyType   PartyType
 	PartyTypeId uint `json:"-"`
