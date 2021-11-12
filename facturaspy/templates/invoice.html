@@ -1,0 +1,49 @@
+<!-- invoice represent and upload -->
+<body>
+    <h1>Load {{.Name}}</h1>
+    <!-- service provider data -->
+    <div>
+        <label >
+            Taxpayer Id:
+        </label>
+        <input id="taxpayerId" value="{{.Party.TaxPayerId}}" disabled="true" />
+        <label>
+            Name:
+            <input id="name" value="{{.Party.Name}}" disabled="true" />
+        </label>
+    
+
+    <form id="invoiceForm">
+        
+        <div>
+            <label>Issue Date</label>
+            <div>
+                <label>
+                    Day:
+                    <input id="day" value="" />
+                </label>
+                <label>Month:
+                    <input id="month" value=""/>
+                </label>
+                <label>Year:
+                    <input id="year" value=""/>
+                </label>
+            </div>
+        </div>
+        <div>
+            <div>
+                <label>Document Id</label>
+                <!-- 016-001-0012797  -->
+                <input id="docId1" value="" /> - 
+                <input id="docId2" value="" /> - 
+                <input id="docId3" value="" />
+
+            </div>
+        </div>
+        
+        <!-- <div>
+            <button id="editBtn">Edit</button>
+            <button id="cancelBtn">Cancel</button>
+            <button id="saveBtn">Save</button>
+        </div> -->
+    </form>
