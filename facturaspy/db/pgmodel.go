@@ -61,13 +61,20 @@ type InvoiceType struct {
 
 type Invoice struct {
 	BaseModel
-	IssueDate       time.Time
+	IssueDate       BaseDate
 	InvoiceType     InvoiceType
-	TaxPayerId      uint
-	InvoiceTypeId   uint
+	TaxPayerId      int64
+	InvoiceTypeId   int64
 	FiscalYear      FiscalYear `gorm:"ForeignKey:FiscalYearStart,FiscalYearEnd;References:Start,End"`
 	FiscalYearStart time.Time
 	FiscalYearEnd   time.Time
+}
+
+type Stamp struct {
+	BaseModel
+	Value   string
+	Party   Party
+	PartyId int64
 }
 
 // add party document type
@@ -79,7 +86,8 @@ type Party struct {
 	BirthDate   BaseDate  `json:"birthDate"`
 	StartDate   time.Time `json:"startDate"`
 	PartyType   PartyType
-	PartyTypeId uint `json:"-"`
+	PartyTypeId int64 `json:"-"`
+	Stamps      []Stamp
 }
 
 type PartyType struct {
@@ -103,8 +111,8 @@ type IncomeType struct {
 
 type Document struct {
 	gorm.Model
-	Documentid  string
-	Date        time.Time
+	DocumentId  string
+	Date        BaseDate
 	TotalAmount decimal.Decimal `json:"totalAmount" sql:"type:decimal(15,2);"`
 	TotalExempt decimal.Decimal `json:"totalExepmt" sql:"type:decimal(15,2);"`
 	TotalVat5   decimal.Decimal `json:"totalVat5" sql:"type:decimal(15,2);"`
@@ -117,11 +125,15 @@ type Income struct {
 	PITIncome         decimal.Decimal `sql:"type:decimal(15,2);"`
 	NotPITIncome      decimal.Decimal `sql:"type:decimal(15,2);"`
 	Customer          Party
-	CustomerId        uint
-	LedgerId          uint
-	DocumentTypeId    uint
-	TransactionTypeId uint
-	IncomeTypeId      uint
+	CustomerId        int64
+	LedgerId          int64
+	Ledger            Ledger
+	StampId           int64
+	Stamp             Stamp
+	DocumentTypeId    int64
+	TransactionTypeId int64
+	IncomeTypeId      int64
+	IncomeType        IncomeType
 }
 
 type ExpenseType struct {
@@ -137,21 +149,32 @@ type ExpenseSubType struct {
 type Expense struct {
 	Document
 	PITDeductible     decimal.Decimal `sql:"type:decimal(10,2);"` // Personal Income Tax deductible
-	Supplier          Party
-	SupplierId        uint // party id
-	LedgerId          uint
-	TransactionTypeId uint
-	ExpenseTypeId     uint
+	Provider          Party
+	ProviderId        int64 // party id
+	LedgerId          int64
+	Ledger            Ledger
+	StampId           int64
+	Stamp             Stamp
+	TransactionTypeId int64
+	ExpenseType       ExpenseType
+	ExpenseTypeId     int64
 }
 
 type Ledger struct {
 	BaseModel
 	Party           Party `json:"party"`
-	PartyId         uint
-	OwnerId         uint       // user associated to this ledger
+	PartyId         int64
+	OwnerId         int64      // user associated to this ledger
 	Incomes         []Income   `json:"incomes"`
 	Expenses        []Expense  `json:"expenses"`
 	FiscalYear      FiscalYear `json:"fiscalYear" gorm:"ForeignKey:FiscalYearStart,FiscalYearEnd;References:Start,End"`
 	FiscalYearStart time.Time  `json:"fiscalYearStart"`
 	FiscalYearEnd   time.Time  `json:"fiscalYearEnd"`
+}
+
+// helper table
+type ArandukaExpenseType struct {
+	BaseModel
+	Text          string
+	ExpenseTypeId int64
 }
