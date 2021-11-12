@@ -88,6 +88,7 @@ func InitWebServices() {
 	// template handlers
 	r.HandleFunc("/file-upload/", handler.FileUploadForm)
 	r.HandleFunc("/ledger/{taxpayerId}", handler.ShowTaxpayer).Methods("GET")
+	r.HandleFunc("/invoice", handler.InvoiceForm).Methods("GET")
 	// API services
 	r.Handle("/api/lie/{taxpayerId}", lieRawHandler())
 	r.Handle("/api/ledger/{taxpayerId}/year/{year}", ledgerHandler())
