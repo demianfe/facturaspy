@@ -124,7 +124,7 @@ type Gasto struct {
 type LIEDetalles struct {
 	Informante     Informante       `json:"informante" bson:"informante" xml:"informante"`
 	Identificacion Identificacion   `json:"identificacion" bson:"identificacion" xml:"identificacion"`
-	Ingresos       []IngresoDetalle `json:"ingresos" bson:"ingresos" bson:"ingresos"`
+	Ingresos       []IngresoDetalle `json:"ingresos" bson:"ingresos"`
 	Egresos        []EgresoDetalle  `json:"egresos" bson:"egresos" xml:"egresos"`
 	//Familiares []Familiar `json:"familiares"`
 	_ID      string             `bson:"_id,omitempty"`

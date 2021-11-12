@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	db "github.com/demianfe/facturaspy/facturaspy/db"
@@ -22,7 +23,7 @@ import (
 // upload file using curl:
 // curl -X POST -L -F "metadata={name : 'LIE_2019_95da08ce_xxxxxxx_yyy.zip'};type=application/json;charset=UTF-8" -F "file=@LIE_2019_95da08ce_xxxxxxx_yyy.zip;type=application/zip" http://localhost:8000/aranduka/fileupload
 
-func readAndSaveLIE(filename string) string {
+func readAndSaveLIE(filename string) (string, string) {
 	// reads a file from the file system and dumps it to a mongodb object
 	// header
 	var lie db.LIE
@@ -46,7 +47,7 @@ func readAndSaveLIE(filename string) string {
 	opts := options.Update().SetUpsert(true)
 	lieRes, _ := c.UpdateOne(context.TODO(), filterLie, updateLie, opts)
 	fmt.Println(lieRes)
-	return lie.Informante.Ruc
+	return lie.Informante.Ruc, lie.Identificacion.Periodo
 }
 
 func readAndSaveDetails(filename string) {
@@ -102,9 +103,11 @@ func UploadFile(w http.ResponseWriter, r *http.Request) (string, error) {
 	detailsFn := filepath.Join(filepath.Clean(filehelper.UploadDir), dest[0], dest[0]+"-detalle.json")
 
 	if helper.Contains(fileNames, lieFn) && helper.Contains(fileNames, detailsFn) {
-		ruc := readAndSaveLIE(lieFn)
+		ruc, fyStr := readAndSaveLIE(lieFn)
 		readAndSaveDetails(detailsFn)
-		db.MongoToPgsql(ruc)
+		fy, _ := strconv.Atoi(fyStr)
+
+		db.MongoToPgsql(ruc, fy)
 		return ruc, nil
 	}
 	return "", err
